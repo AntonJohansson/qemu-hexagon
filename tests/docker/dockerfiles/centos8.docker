@@ -1,10 +1,10 @@
 # THIS FILE WAS AUTO-GENERATED
 #
-#  $ lcitool dockerfile --layers all almalinux-8 qemu
+#  $ lcitool dockerfile --layers all centos-stream-8 qemu
 #
 # https://gitlab.com/libvirt/libvirt-ci
 
-FROM docker.io/library/almalinux:8
+FROM quay.io/centos/centos:stream8
 
 RUN dnf update -y && \
     dnf install 'dnf-command(config-manager)' -y && \
@@ -32,7 +32,6 @@ RUN dnf update -y && \
         diffutils \
         findutils \
         flex \
-        fuse3-devel \
         gcc \
         gcc-c++ \
         genisoimage \
@@ -66,13 +65,13 @@ RUN dnf update -y && \
         libpng-devel \
         librbd-devel \
         libseccomp-devel \
-        libselinux-devel \
         libslirp-devel \
         libssh-devel \
         libtasn1-devel \
         libubsan \
         liburing-devel \
         libusbx-devel \
+        libxml2-devel \
         libzstd-devel \
         llvm \
         lttng-ust-devel \

@@ -20,7 +20,6 @@ packages:
  - dtrace
  - findutils
  - flex
- - fuse3
  - g++
  - gcc
  - gcovr
@@ -28,7 +27,7 @@ packages:
  - genisoimage
  - glib2
  - glib2-static
- - glibc-static
+ - libc-static
  - glusterfs
  - gnutls
  - gtk3
@@ -57,7 +56,6 @@ packages:
  - librbd
  - librdmacm
  - libseccomp
- - libselinux
  - libslirp
  - libssh
  - libtasn1
@@ -66,6 +64,7 @@ packages:
  - liburing
  - libusbx
  - libvdeplug
+ - libxml2
  - libzstd
  - llvm
  - lttng-ust

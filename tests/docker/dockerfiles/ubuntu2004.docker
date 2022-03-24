@@ -48,7 +48,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             libepoxy-dev \
             libfdt-dev \
             libffi-dev \
-            libfuse3-dev \
             libgbm-dev \
             libgcrypt20-dev \
             libglib2.0-dev \
@@ -77,7 +76,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             libsdl2-dev \
             libsdl2-image-dev \
             libseccomp-dev \
-            libselinux1-dev \
             libslirp-dev \
             libsnappy-dev \
             libspice-protocol-dev \
@@ -94,6 +92,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             libvirglrenderer-dev \
             libvte-2.91-dev \
             libxen-dev \
+            libxml2-dev \
             libzstd-dev \
             llvm \
             locales \

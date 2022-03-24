@@ -39,7 +39,6 @@ exec "$@"' > /usr/bin/nosync && \
         diffutils \
         findutils \
         flex \
-        fuse3-devel \
         gcc \
         gcc-c++ \
         gcovr \
@@ -74,13 +73,13 @@ exec "$@"' > /usr/bin/nosync && \
         libpng-devel \
         librbd-devel \
         libseccomp-devel \
-        libselinux-devel \
         libslirp-devel \
         libssh-devel \
         libtasn1-devel \
         libubsan \
         liburing-devel \
         libusbx-devel \
+        libxml2-devel \
         libzstd-devel \
         llvm \
         lttng-ust-devel \
