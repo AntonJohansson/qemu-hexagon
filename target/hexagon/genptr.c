@@ -654,22 +654,10 @@ static void vec_to_qvec(size_t size, intptr_t dstoff, intptr_t srcoff)
 
 void gen_set_usr_field(int field, TCGv val)
 {
-    /*
-     * Apparently tcg_gen_deposit_i32/64 doesn't OR the input value
-     * with the previously present one, as deposit32/64 in bitops.h
-     * does. We therefore copy the old value to `old_usr` to later
-     * OR with it to replicate this behavior.
-     */
-    TCGv_i32 old_usr = tcg_temp_new_i32();
-    tcg_gen_mov_i32(old_usr, hex_new_value[HEX_REG_USR]);
     tcg_gen_deposit_tl(hex_new_value[HEX_REG_USR], hex_new_value[HEX_REG_USR],
                        val,
                        reg_field_info[field].offset,
                        reg_field_info[field].width);
-    tcg_gen_or_i32(hex_new_value[HEX_REG_USR],
-                   old_usr,
-                   hex_new_value[HEX_REG_USR]);
-    tcg_temp_free(old_usr);
 }
 
 void gen_set_usr_fieldi(int field, int x)

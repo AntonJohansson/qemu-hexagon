@@ -41,7 +41,7 @@
 
 #ifdef QEMU_GENERATE
 #define GET_USR_FIELD(FIELD, DST) \
-    tcg_gen_extract_tl(DST, hex_gpr[HEX_REG_USR], \
+    tcg_gen_extract_tl(DST, hex_new_value[HEX_REG_USR], \
                        reg_field_info[FIELD].offset, \
                        reg_field_info[FIELD].width)
 
@@ -58,7 +58,7 @@
     SET_USR_FIELD_FUNC(VAL)(FIELD, VAL)
 #else
 #define GET_USR_FIELD(FIELD) \
-    fEXTRACTU_BITS(env->gpr[HEX_REG_USR], reg_field_info[FIELD].width, \
+    fEXTRACTU_BITS(env->new_value[HEX_REG_USR], reg_field_info[FIELD].width, \
                    reg_field_info[FIELD].offset)
 
 #define SET_USR_FIELD(FIELD, VAL) \

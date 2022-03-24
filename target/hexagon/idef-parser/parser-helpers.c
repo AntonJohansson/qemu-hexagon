@@ -2350,10 +2350,29 @@ HexValue gen_rvalue_sat(Context *c, YYLTYPE *locp, HexSat *sat,
                  "saturation width!");
     }
     if (sat->set_overflow) {
+        HexValue current_ovfl;
         HexValue ovfl = gen_tmp(c, locp, 32, sat->signedness);
         OUT(c, locp, "gen_sat", unsigned_str, "_", bit_suffix, "_ovfl(");
         OUT(c, locp, &ovfl, ", ", &res, ", ", value, ", ", &width->imm.value,
             ");\n");
+
+        /*
+         * Here we are retrieving the old USR field so
+         * we can emit
+         *
+         *     USR_OVF |= ovfl.
+         *
+         * We want this to mimic the behaviour of fSATUN
+         * and the like, which don't set overflow if an
+         * overlow hasn't occured. By or'ing with the
+         * previous value we avoid branching.
+         */
+        current_ovfl = gen_tmp(c, locp, 32, sat->signedness);
+        OUT(c, locp, "GET_USR_FIELD(USR_OVF, ", &current_ovfl, ");\n");
+        OUT(c, locp, "tcg_gen_or_i32(", &ovfl, ",", &ovfl, ", ",
+            &current_ovfl, ");\n");
+        gen_rvalue_free(c, locp, &current_ovfl);
+
         gen_set_overflow(c, locp, &ovfl);
     } else {
         OUT(c, locp, "gen_sat", unsigned_str, "_", bit_suffix, "(", &res, ", ");
