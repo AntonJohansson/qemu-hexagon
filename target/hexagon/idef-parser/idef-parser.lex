@@ -318,7 +318,7 @@ STRING_LIT               \"(\\.|[^"\\])*\"
 "NPC"                    { return NPC; }
 "fGET_LPCFG"             |
 "USR.LPCFG"              { return LPCFG; }
-"LOAD_CANCEL(EA)"        |
+"LOAD_CANCEL(EA)"        { return LOAD_CANCEL; }
 "STORE_CANCEL(EA)"       |
 "CANCEL"                 { return CANCEL; }
 "N"{LOWER_ID}"N"         { yylval->rvalue.type = REGISTER_ARG;

@@ -310,6 +310,10 @@ void gen_inst_code(Context *c, YYLTYPE *locp);
 void gen_pred_assign(Context *c, YYLTYPE *locp, HexValue *left_pred,
                      HexValue *right_pred);
 
+void gen_cancel(Context *c, YYLTYPE *locp);
+
+void gen_load_cancel(Context *c, YYLTYPE *locp);
+
 void gen_load(Context *c, YYLTYPE *locp, HexValue *size,
               HexSignedness signedness, HexValue *ea, HexValue *dst);
 

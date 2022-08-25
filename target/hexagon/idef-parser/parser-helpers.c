@@ -1902,6 +1902,20 @@ void gen_pred_assign(Context *c, YYLTYPE *locp, HexValue *left_pred,
     gen_rvalue_free(c, locp, &r);
 }
 
+void gen_cancel(Context *c, YYLTYPE *locp)
+{
+    OUT(c, locp, "gen_cancel(insn->slot);\n");
+}
+
+void gen_load_cancel(Context *c, YYLTYPE *locp)
+{
+    gen_cancel(c, locp);
+    OUT(c, locp, "if (insn->slot == 0 && pkt->pkt_has_store_s1) {\n");
+    OUT(c, locp, "ctx->s1_store_processed = false;\n");
+    OUT(c, locp, "process_store(ctx, pkt, 1);\n");
+    OUT(c, locp, "}\n");
+}
+
 void gen_load(Context *c, YYLTYPE *locp, HexValue *width,
               HexSignedness signedness, HexValue *ea, HexValue *dst)
 {

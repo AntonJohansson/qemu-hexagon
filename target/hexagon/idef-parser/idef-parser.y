@@ -53,7 +53,7 @@
 %token ABS CROUND ROUND CIRCADD COUNTONES INC DEC ANDA ORA XORA PLUSPLUS ASL
 %token ASR LSR EQ NEQ LTE GTE MIN MAX ANDL FOR ICIRC IF MUN FSCR FCHK SXT
 %token ZXT CONSTEXT LOCNT BREV SIGN LOAD STORE PC NPC LPCFG
-%token CANCEL IDENTITY PART1 ROTL INSBITS SETBITS EXTRANGE
+%token LOAD_CANCEL CANCEL IDENTITY PART1 ROTL INSBITS SETBITS EXTRANGE
 %token CAST4_8U FAIL CARRY_FROM_ADD ADDSAT64 LSBNEW
 %token TYPE_SIZE_T TYPE_INT TYPE_SIGNED TYPE_UNSIGNED TYPE_LONG
 
@@ -425,9 +425,13 @@ frame_check : FCHK '(' rvalue ',' rvalue ')' ';'
               }
             ;
 
-cancel_statement : CANCEL
+cancel_statement : LOAD_CANCEL
                    {
-                       OUT(c, &@1, "gen_cancel(insn->slot);\n");
+                       gen_load_cancel(c, &@1);
+                   }
+                 | CANCEL
+                   {
+                       gen_cancel(c, &@1);
                    }
                  ;
 
