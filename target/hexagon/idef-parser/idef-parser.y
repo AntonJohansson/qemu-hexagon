@@ -439,7 +439,6 @@ if_statement : if_stmt
                {
                    /* Fix else label */
                    OUT(c, &@1, "gen_set_label(if_label_", &$1, ");\n");
-                   c->inst.in_if_branch = false;
                }
              | if_stmt ELSE
                {
@@ -449,7 +448,6 @@ if_statement : if_stmt
                statement
                {
                    OUT(c, &@1, "gen_set_label(if_label_", &$2, ");\n");
-                   c->inst.in_if_branch = false;
                }
              ;
 
@@ -486,7 +484,6 @@ if_stmt : IF '(' rvalue ')'
           {
               @1.last_column = @3.last_column;
               $1 = gen_if_cond(c, &@1, &$3);
-              c->inst.in_if_branch = true;
           }
           statement
           {

@@ -226,7 +226,6 @@ typedef struct Inst {
     GArray *allocated;          /**< Allocated declaredVARID vars             */
     GArray *init_list;          /**< List of initialized registers            */
     GArray *strings;            /**< Strings allocated by the instruction     */
-    bool in_if_branch;          /**< True when parsing branch of if statement */
 } Inst;
 
 /**
