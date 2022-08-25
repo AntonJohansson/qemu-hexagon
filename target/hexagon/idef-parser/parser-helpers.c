@@ -1923,10 +1923,6 @@ void gen_load(Context *c, YYLTYPE *locp, HexValue *width,
     OUT(c, locp, "if (insn->slot == 0 && pkt->pkt_has_store_s1) {\n");
     OUT(c, locp, "probe_noshuf_load(", ea, ", ", width, ", ctx->mem_idx);\n");
     OUT(c, locp, "process_store(ctx, pkt, 1);\n");
-    if (c->inst.in_if_branch) {
-        OUT(c, locp, "tcg_gen_movi_tl(hex_did_s1_store, 1);\n");
-        OUT(c, locp, "ctx->insn_is_noshuf_pload = true;\n");
-    }
     OUT(c, locp, "}\n");
     OUT(c, locp, "tcg_gen_qemu_ld", size_suffix, sign_suffix);
     OUT(c, locp, "(");
