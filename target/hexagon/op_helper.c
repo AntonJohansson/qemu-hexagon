@@ -51,7 +51,7 @@ G_NORETURN void HELPER(raise_exception)(CPUHexagonState *env, uint32_t excp)
 }
 
 static void log_reg_write(CPUHexagonState *env, int rnum,
-                          target_ulong val, uint32_t slot)
+                          target_ulong val, unsigned slot)
 {
     HEX_DEBUG_LOG("log_reg_write[%d] = " TARGET_FMT_ld " (0x" TARGET_FMT_lx ")",
                   rnum, val, val);
@@ -83,7 +83,7 @@ static void log_pred_write(CPUHexagonState *env, int pnum, target_ulong val)
 }
 
 static void log_store32(CPUHexagonState *env, target_ulong addr,
-                        target_ulong val, int width, int slot)
+                        target_ulong val, int width, unsigned slot)
 {
     HEX_DEBUG_LOG("log_store%d(0x" TARGET_FMT_lx
                   ", %" PRId32 " [0x08%" PRIx32 "])\n",
@@ -94,7 +94,7 @@ static void log_store32(CPUHexagonState *env, target_ulong addr,
 }
 
 static void log_store64(CPUHexagonState *env, target_ulong addr,
-                        int64_t val, int width, int slot)
+                        int64_t val, int width, unsigned slot)
 {
     HEX_DEBUG_LOG("log_store%d(0x" TARGET_FMT_lx
                   ", %" PRId64 " [0x016%" PRIx64 "])\n",
@@ -531,7 +531,7 @@ void HELPER(probe_pkt_scalar_hvx_stores)(CPUHexagonState *env, int mask,
  * If the load is in slot 0 and there is a store in slot1 (that
  * wasn't cancelled), we have to do the store first.
  */
-static void check_noshuf(CPUHexagonState *env, uint32_t slot,
+static void check_noshuf(CPUHexagonState *env, unsigned slot,
                          target_ulong vaddr, int size)
 {
     if (slot == 0 && env->pkt_has_store_s1 &&
@@ -541,7 +541,7 @@ static void check_noshuf(CPUHexagonState *env, uint32_t slot,
     }
 }
 
-static uint8_t mem_load1(CPUHexagonState *env, uint32_t slot,
+static uint8_t mem_load1(CPUHexagonState *env, unsigned slot,
                          target_ulong vaddr)
 {
     uintptr_t ra = GETPC();
@@ -549,7 +549,7 @@ static uint8_t mem_load1(CPUHexagonState *env, uint32_t slot,
     return cpu_ldub_data_ra(env, vaddr, ra);
 }
 
-static uint16_t mem_load2(CPUHexagonState *env, uint32_t slot,
+static uint16_t mem_load2(CPUHexagonState *env, unsigned slot,
                           target_ulong vaddr)
 {
     uintptr_t ra = GETPC();
@@ -557,7 +557,7 @@ static uint16_t mem_load2(CPUHexagonState *env, uint32_t slot,
     return cpu_lduw_data_ra(env, vaddr, ra);
 }
 
-static uint32_t mem_load4(CPUHexagonState *env, uint32_t slot,
+static uint32_t mem_load4(CPUHexagonState *env, unsigned slot,
                           target_ulong vaddr)
 {
     uintptr_t ra = GETPC();
@@ -565,7 +565,7 @@ static uint32_t mem_load4(CPUHexagonState *env, uint32_t slot,
     return cpu_ldl_data_ra(env, vaddr, ra);
 }
 
-static uint64_t mem_load8(CPUHexagonState *env, uint32_t slot,
+static uint64_t mem_load8(CPUHexagonState *env, unsigned slot,
                           target_ulong vaddr)
 {
     uintptr_t ra = GETPC();
@@ -1471,7 +1471,7 @@ void HELPER(vwhist128qm)(CPUHexagonState *env, int32_t uiV)
     }
 }
 
-static void cancel_slot(CPUHexagonState *env, uint32_t slot)
+static void cancel_slot(CPUHexagonState *env, unsigned slot)
 {
     HEX_DEBUG_LOG("Slot %d cancelled\n", slot);
     env->slot_cancelled |= (1 << slot);
