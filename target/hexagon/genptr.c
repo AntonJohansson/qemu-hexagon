@@ -29,6 +29,19 @@
 #undef QEMU_GENERATE
 #include "gen_tcg.h"
 #include "gen_tcg_hvx.h"
+#include "genptr.h"
+
+TCGv gen_read_reg(TCGv result, int num)
+{
+    tcg_gen_mov_tl(result, hex_gpr[num]);
+    return result;
+}
+
+TCGv gen_read_preg(TCGv pred, uint8_t num)
+{
+    tcg_gen_mov_tl(pred, hex_pred[num]);
+    return pred;
+}
 
 static inline void gen_log_predicated_reg_write(int rnum, TCGv val,
                                                 unsigned slot)
@@ -54,7 +67,7 @@ static inline void gen_log_predicated_reg_write(int rnum, TCGv val,
     tcg_temp_free(slot_mask);
 }
 
-static inline void gen_log_reg_write(int rnum, TCGv val)
+void gen_log_reg_write(int rnum, TCGv val)
 {
     tcg_gen_mov_tl(hex_new_value[rnum], val);
     if (HEX_DEBUG) {
@@ -116,7 +129,7 @@ static void gen_log_reg_write_pair(int rnum, TCGv_i64 val)
     }
 }
 
-static inline void gen_log_pred_write(DisasContext *ctx, int pnum, TCGv val)
+void gen_log_pred_write(DisasContext *ctx, int pnum, TCGv val)
 {
     TCGv base_val = tcg_temp_new();
 
@@ -274,7 +287,7 @@ static inline void gen_write_ctrl_reg_pair(DisasContext *ctx, int reg_num,
     }
 }
 
-static TCGv gen_get_byte(TCGv result, int N, TCGv src, bool sign)
+TCGv gen_get_byte(TCGv result, int N, TCGv src, bool sign)
 {
     if (sign) {
         tcg_gen_sextract_tl(result, src, N * 8, 8);
@@ -284,7 +297,7 @@ static TCGv gen_get_byte(TCGv result, int N, TCGv src, bool sign)
     return result;
 }
 
-static TCGv gen_get_byte_i64(TCGv result, int N, TCGv_i64 src, bool sign)
+TCGv gen_get_byte_i64(TCGv result, int N, TCGv_i64 src, bool sign)
 {
     TCGv_i64 res64 = tcg_temp_new_i64();
     if (sign) {
@@ -298,7 +311,7 @@ static TCGv gen_get_byte_i64(TCGv result, int N, TCGv_i64 src, bool sign)
     return result;
 }
 
-static inline TCGv gen_get_half(TCGv result, int N, TCGv src, bool sign)
+TCGv gen_get_half(TCGv result, int N, TCGv src, bool sign)
 {
     if (sign) {
         tcg_gen_sextract_tl(result, src, N * 16, 16);
@@ -308,12 +321,12 @@ static inline TCGv gen_get_half(TCGv result, int N, TCGv src, bool sign)
     return result;
 }
 
-static inline void gen_set_half(int N, TCGv result, TCGv src)
+void gen_set_half(int N, TCGv result, TCGv src)
 {
     tcg_gen_deposit_tl(result, result, src, N * 16, 16);
 }
 
-static inline void gen_set_half_i64(int N, TCGv_i64 result, TCGv src)
+void gen_set_half_i64(int N, TCGv_i64 result, TCGv src)
 {
     TCGv_i64 src64 = tcg_temp_new_i64();
     tcg_gen_extu_i32_i64(src64, src);
@@ -321,7 +334,7 @@ static inline void gen_set_half_i64(int N, TCGv_i64 result, TCGv src)
     tcg_temp_free_i64(src64);
 }
 
-static void gen_set_byte_i64(int N, TCGv_i64 result, TCGv src)
+void gen_set_byte_i64(int N, TCGv_i64 result, TCGv src)
 {
     TCGv_i64 src64 = tcg_temp_new_i64();
     tcg_gen_extu_i32_i64(src64, src);
@@ -396,68 +409,60 @@ static inline void gen_store_conditional8(DisasContext *ctx,
     tcg_gen_movi_tl(hex_llsc_addr, ~0);
 }
 
-static inline void gen_store32(TCGv vaddr, TCGv src, int width, unsigned slot)
+void gen_store32(TCGv vaddr, TCGv src, int width, unsigned slot)
 {
     tcg_gen_mov_tl(hex_store_addr[slot], vaddr);
     tcg_gen_movi_tl(hex_store_width[slot], width);
     tcg_gen_mov_tl(hex_store_val32[slot], src);
 }
 
-static inline void gen_store1(TCGv_env cpu_env, TCGv vaddr, TCGv src,
-                              unsigned slot)
+void gen_store1(TCGv_env cpu_env, TCGv vaddr, TCGv src, unsigned slot)
 {
     gen_store32(vaddr, src, 1, slot);
 }
 
-static inline void gen_store1i(TCGv_env cpu_env, TCGv vaddr, int32_t src,
-                               unsigned slot)
+void gen_store1i(TCGv_env cpu_env, TCGv vaddr, int32_t src, unsigned slot)
 {
     TCGv tmp = tcg_constant_tl(src);
     gen_store1(cpu_env, vaddr, tmp, slot);
 }
 
-static inline void gen_store2(TCGv_env cpu_env, TCGv vaddr, TCGv src,
-                              unsigned slot)
+void gen_store2(TCGv_env cpu_env, TCGv vaddr, TCGv src, unsigned slot)
 {
     gen_store32(vaddr, src, 2, slot);
 }
 
-static inline void gen_store2i(TCGv_env cpu_env, TCGv vaddr, int32_t src,
-                               unsigned slot)
+void gen_store2i(TCGv_env cpu_env, TCGv vaddr, int32_t src, unsigned slot)
 {
     TCGv tmp = tcg_constant_tl(src);
     gen_store2(cpu_env, vaddr, tmp, slot);
 }
 
-static inline void gen_store4(TCGv_env cpu_env, TCGv vaddr, TCGv src,
-                              unsigned slot)
+void gen_store4(TCGv_env cpu_env, TCGv vaddr, TCGv src, unsigned slot)
 {
     gen_store32(vaddr, src, 4, slot);
 }
 
-static inline void gen_store4i(TCGv_env cpu_env, TCGv vaddr, int32_t src,
-                               unsigned slot)
+void gen_store4i(TCGv_env cpu_env, TCGv vaddr, int32_t src, unsigned slot)
 {
     TCGv tmp = tcg_constant_tl(src);
     gen_store4(cpu_env, vaddr, tmp, slot);
 }
 
-static inline void gen_store8(TCGv_env cpu_env, TCGv vaddr, TCGv_i64 src,
-                              unsigned slot)
+void gen_store8(TCGv_env cpu_env, TCGv vaddr, TCGv_i64 src, unsigned slot)
 {
     tcg_gen_mov_tl(hex_store_addr[slot], vaddr);
     tcg_gen_movi_tl(hex_store_width[slot], 8);
     tcg_gen_mov_i64(hex_store_val64[slot], src);
 }
 
-static inline void gen_store8i(TCGv_env cpu_env, TCGv vaddr, int64_t src,
-                               unsigned slot)
+void gen_store8i(TCGv_env cpu_env, TCGv vaddr, int64_t src, unsigned slot)
 {
     TCGv_i64 tmp = tcg_constant_i64(src);
     gen_store8(cpu_env, vaddr, tmp, slot);
 }
 
-static TCGv gen_8bitsof(TCGv result, TCGv value)
+TCGv gen_8bitsof(TCGv result, TCGv value)
 {
     TCGv zero = tcg_constant_tl(0);
     TCGv ones = tcg_constant_tl(0xff);
@@ -636,11 +641,170 @@ static void vec_to_qvec(size_t size, intptr_t dstoff, intptr_t srcoff)
     tcg_temp_free_i64(mask);
 }
 
-static void probe_noshuf_load(TCGv va, int s, int mi)
+void probe_noshuf_load(TCGv va, int s, int mi)
 {
     TCGv size = tcg_constant_tl(s);
     TCGv mem_idx = tcg_constant_tl(mi);
     gen_helper_probe_noshuf_load(cpu_env, va, size, mem_idx);
+}
+
+void gen_set_usr_field(int field, TCGv val)
+{
+    tcg_gen_deposit_tl(hex_new_value[HEX_REG_USR], hex_new_value[HEX_REG_USR],
+                       val,
+                       reg_field_info[field].offset,
+                       reg_field_info[field].width);
+}
+
+void gen_set_usr_fieldi(int field, int x)
+{
+    TCGv val = tcg_constant_tl(x);
+    gen_set_usr_field(field, val);
+}
+
+/*
+ * Note: Since this function might branch, `val` is
+ * required to be a `tcg_temp_local`.
+ */
+void gen_set_usr_field_if(int field, TCGv val)
+{
+    /* Sets the USR field if `val` is non-zero */
+    if (reg_field_info[field].width == 1) {
+        TCGv tmp = tcg_temp_new();
+        tcg_gen_extract_tl(tmp, val, 0, reg_field_info[field].width);
+        tcg_gen_shli_tl(tmp, tmp, reg_field_info[field].offset);
+        tcg_gen_or_tl(hex_new_value[HEX_REG_USR],
+                      hex_new_value[HEX_REG_USR],
+                      tmp);
+        tcg_temp_free(tmp);
+    } else {
+        TCGLabel *skip_label = gen_new_label();
+        tcg_gen_brcondi_tl(TCG_COND_EQ, val, 0, skip_label);
+        gen_set_usr_field(field, val);
+        gen_set_label(skip_label);
+    }
+}
+
+void gen_write_new_pc(TCGv addr)
+{
+    /* If there are multiple branches in a packet, ignore the second one */
+    TCGv zero = tcg_constant_tl(0);
+    tcg_gen_movcond_tl(TCG_COND_NE, hex_next_PC, hex_branch_taken, zero,
+                       hex_next_PC, addr);
+    tcg_gen_movi_tl(hex_branch_taken, 1);
+}
+
+void gen_sat_i32(TCGv dest, TCGv source, int width)
+{
+    TCGv max_val = tcg_constant_tl((1 << (width - 1)) - 1);
+    TCGv min_val = tcg_constant_tl(-(1 << (width - 1)));
+    tcg_gen_smin_tl(dest, source, max_val);
+    tcg_gen_smax_tl(dest, dest, min_val);
+}
+
+void gen_sat_i32_ovfl(TCGv ovfl, TCGv dest, TCGv source, int width)
+{
+    gen_sat_i32(dest, source, width);
+    tcg_gen_setcond_tl(TCG_COND_NE, ovfl, source, dest);
+}
+
+void gen_satu_i32(TCGv dest, TCGv source, int width)
+{
+    TCGv max_val = tcg_constant_tl((1 << width) - 1);
+    TCGv zero = tcg_constant_tl(0);
+    tcg_gen_movcond_tl(TCG_COND_GTU, dest, source, max_val, max_val, source);
+    tcg_gen_movcond_tl(TCG_COND_LT, dest, source, zero, zero, dest);
+}
+
+void gen_satu_i32_ovfl(TCGv ovfl, TCGv dest, TCGv source, int width)
+{
+    gen_satu_i32(dest, source, width);
+    tcg_gen_setcond_tl(TCG_COND_NE, ovfl, source, dest);
+}
+
+void gen_sat_i64(TCGv_i64 dest, TCGv_i64 source, int width)
+{
+    TCGv_i64 max_val = tcg_constant_i64((1LL << (width - 1)) - 1LL);
+    TCGv_i64 min_val = tcg_constant_i64(-(1LL << (width - 1)));
+    tcg_gen_smin_i64(dest, source, max_val);
+    tcg_gen_smax_i64(dest, dest, min_val);
+}
+
+void gen_sat_i64_ovfl(TCGv ovfl, TCGv_i64 dest, TCGv_i64 source, int width)
+{
+    TCGv_i64 ovfl_64;
+    gen_sat_i64(dest, source, width);
+    ovfl_64 = tcg_temp_new_i64();
+    tcg_gen_setcond_i64(TCG_COND_NE, ovfl_64, dest, source);
+    tcg_gen_trunc_i64_tl(ovfl, ovfl_64);
+    tcg_temp_free_i64(ovfl_64);
+}
+
+void gen_satu_i64(TCGv_i64 dest, TCGv_i64 source, int width)
+{
+    TCGv_i64 max_val = tcg_constant_i64((1LL << width) - 1LL);
+    TCGv_i64 zero = tcg_constant_i64(0);
+    tcg_gen_movcond_i64(TCG_COND_GTU, dest, source, max_val, max_val, source);
+    tcg_gen_movcond_i64(TCG_COND_LT, dest, source, zero, zero, dest);
+}
+
+void gen_satu_i64_ovfl(TCGv ovfl, TCGv_i64 dest, TCGv_i64 source, int width)
+{
+    TCGv_i64 ovfl_64;
+    gen_satu_i64(dest, source, width);
+    ovfl_64 = tcg_temp_new_i64();
+    tcg_gen_setcond_i64(TCG_COND_NE, ovfl_64, dest, source);
+    tcg_gen_trunc_i64_tl(ovfl, ovfl_64);
+    tcg_temp_free_i64(ovfl_64);
+}
+
+/* Implements the fADDSAT64 macro in TCG */
+void gen_add_sat_i64(TCGv_i64 ret, TCGv_i64 a, TCGv_i64 b)
+{
+    TCGv_i64 sum = tcg_temp_local_new_i64();
+    TCGv_i64 xor = tcg_temp_new_i64();
+    TCGv_i64 cond1 = tcg_temp_new_i64();
+    TCGv_i64 cond2 = tcg_temp_local_new_i64();
+    TCGv_i64 cond3 = tcg_temp_new_i64();
+    TCGv_i64 mask = tcg_constant_i64(0x8000000000000000ULL);
+    TCGv_i64 max_pos = tcg_constant_i64(0x7FFFFFFFFFFFFFFFLL);
+    TCGv_i64 max_neg = tcg_constant_i64(0x8000000000000000LL);
+    TCGv_i64 zero = tcg_constant_i64(0);
+    TCGLabel *no_ovfl_label = gen_new_label();
+    TCGLabel *ovfl_label = gen_new_label();
+    TCGLabel *ret_label = gen_new_label();
+
+    tcg_gen_add_i64(sum, a, b);
+    tcg_gen_xor_i64(xor, a, b);
+
+    /* if (xor & mask) */
+    tcg_gen_and_i64(cond1, xor, mask);
+    tcg_temp_free_i64(xor);
+    tcg_gen_brcondi_i64(TCG_COND_NE, cond1, 0, no_ovfl_label);
+    tcg_temp_free_i64(cond1);
+
+    /* else if ((a ^ sum) & mask) */
+    tcg_gen_xor_i64(cond2, a, sum);
+    tcg_gen_and_i64(cond2, cond2, mask);
+    tcg_gen_brcondi_i64(TCG_COND_NE, cond2, 0, ovfl_label);
+    tcg_temp_free_i64(cond2);
+    /* fallthrough to no_ovfl_label branch */
+
+    /* if branch */
+    gen_set_label(no_ovfl_label);
+    tcg_gen_mov_i64(ret, sum);
+    tcg_gen_br(ret_label);
+
+    /* else if branch */
+    gen_set_label(ovfl_label);
+    tcg_gen_and_i64(cond3, sum, mask);
+    tcg_temp_free_i64(mask);
+    tcg_temp_free_i64(sum);
+    tcg_gen_movcond_i64(TCG_COND_NE, ret, cond3, zero, max_pos, max_neg);
+    tcg_temp_free_i64(cond3);
+    SET_USR_FIELD(USR_OVF, 1);
+
+    gen_set_label(ret_label);
 }
 
 #include "tcg_funcs_generated.c.inc"
