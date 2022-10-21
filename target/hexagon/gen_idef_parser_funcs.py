@@ -52,11 +52,14 @@ def main():
         f.write('#include "macros.inc"\n\n')
 
         for tag in hex_common.tags:
-            ## Skip the priv instructions
+            ## Skip priv instructions
             if ( "A_PRIV" in hex_common.attribdict[tag] ) :
                 continue
-            ## Skip the guest instructions
+            ## Skip guest instructions
             if ( "A_GUEST" in hex_common.attribdict[tag] ) :
+                continue
+            ## Skip COF instructions
+            if ( "A_COF" in hex_common.attribdict[tag] ) :
                 continue
             ## Skip instructions that saturate in a ternary expression
             if ( tag in {'S2_asr_r_r_sat', 'S2_asl_r_r_sat'} ) :
