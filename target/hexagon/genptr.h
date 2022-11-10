@@ -37,8 +37,6 @@ TCGv gen_read_reg(TCGv result, int num);
 TCGv gen_read_preg(TCGv pred, uint8_t num);
 void gen_log_reg_write(int rnum, TCGv val);
 void gen_log_pred_write(DisasContext *ctx, int pnum, TCGv val);
-void gen_write_new_pc_addr(DisasContext *ctx, Packet *pkt,
-                           TCGv addr, TCGv pred);
 void gen_set_usr_field(int field, TCGv val);
 void gen_set_usr_fieldi(int field, int x);
 void gen_set_usr_field_if(int field, TCGv val);
