@@ -19,7 +19,31 @@
 #define HEXAGON_GENPTR_H
 
 #include "insn.h"
+#include "tcg/tcg.h"
+#include "translate.h"
 
 extern const SemanticInsn opcode_genptr[];
+
+void gen_store32(TCGv vaddr, TCGv src, int width, unsigned slot);
+void gen_store1(TCGv_env cpu_env, TCGv vaddr, TCGv src, unsigned slot);
+void gen_store2(TCGv_env cpu_env, TCGv vaddr, TCGv src, unsigned slot);
+void gen_store4(TCGv_env cpu_env, TCGv vaddr, TCGv src, unsigned slot);
+void gen_store8(TCGv_env cpu_env, TCGv vaddr, TCGv_i64 src, unsigned slot);
+void gen_store1i(TCGv_env cpu_env, TCGv vaddr, int32_t src, unsigned slot);
+void gen_store2i(TCGv_env cpu_env, TCGv vaddr, int32_t src, unsigned slot);
+void gen_store4i(TCGv_env cpu_env, TCGv vaddr, int32_t src, unsigned slot);
+void gen_store8i(TCGv_env cpu_env, TCGv vaddr, int64_t src, unsigned slot);
+void gen_log_reg_write(int rnum, TCGv val);
+void gen_log_pred_write(DisasContext *ctx, int pnum, TCGv val);
+void gen_set_usr_field(int field, TCGv val);
+void gen_set_usr_fieldi(int field, int x);
+TCGv gen_8bitsof(TCGv result, TCGv value);
+void gen_set_byte_i64(int N, TCGv_i64 result, TCGv src);
+TCGv gen_get_byte(TCGv result, int N, TCGv src, bool sign);
+TCGv gen_get_byte_i64(TCGv result, int N, TCGv_i64 src, bool sign);
+TCGv gen_get_half(TCGv result, int N, TCGv src, bool sign);
+void gen_set_half(int N, TCGv result, TCGv src);
+void gen_set_half_i64(int N, TCGv_i64 result, TCGv src);
+void probe_noshuf_load(TCGv va, int s, int mi);
 
 #endif
