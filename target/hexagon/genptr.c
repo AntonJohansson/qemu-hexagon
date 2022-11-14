@@ -512,7 +512,7 @@ static void gen_write_new_pc_pcrel(DisasContext *ctx, int pc_off,
     }
 }
 
-static void gen_set_usr_field(int field, TCGv val)
+void gen_set_usr_field(int field, TCGv val)
 {
     tcg_gen_deposit_tl(hex_new_value[HEX_REG_USR], hex_new_value[HEX_REG_USR],
                        val,
@@ -520,7 +520,7 @@ static void gen_set_usr_field(int field, TCGv val)
                        reg_field_info[field].width);
 }
 
-static void gen_set_usr_fieldi(int field, int x)
+void gen_set_usr_fieldi(int field, int x)
 {
     if (reg_field_info[field].width == 1) {
         target_ulong bit = 1 << reg_field_info[field].offset;
