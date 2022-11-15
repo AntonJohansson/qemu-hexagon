@@ -344,7 +344,7 @@ assign_statement : lvalue '=' rvalue
                                 "Assignment side-effect not modeled!");
                        $3 = gen_rvalue_truncate(c, &@1, &$3);
                        $3 = rvalue_materialize(c, &@1, &$3);
-                       OUT(c, &@1, "gen_write_new_pc(", &$3, ");\n");
+                       OUT(c, &@1, "gen_write_new_pc_addr(ctx, pkt, ", &$3, ", NULL);\n");
                        gen_rvalue_free(c, &@1, &$3); /* Free temporary value */
                    }
                  | LOAD '(' IMM ',' IMM ',' SIGN ',' var ',' lvalue ')'
