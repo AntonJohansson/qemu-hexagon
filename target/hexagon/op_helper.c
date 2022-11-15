@@ -105,8 +105,8 @@ void log_store64(CPUHexagonState *env, target_ulong addr,
     env->mem_log_stores[slot].data64 = val;
 }
 
-void write_new_pc(CPUHexagonState *env, bool pkt_has_multi_cof,
-                  target_ulong addr)
+static void write_new_pc(CPUHexagonState *env, bool pkt_has_multi_cof,
+                         target_ulong addr)
 {
     HEX_DEBUG_LOG("write_new_pc(0x" TARGET_FMT_lx ")\n", addr);
 

@@ -20,7 +20,6 @@
 
 /* Misc functions */
 void cancel_slot(CPUHexagonState *env, unsigned slot);
-void write_new_pc(CPUHexagonState *env, target_ulong addr);
 
 uint8_t mem_load1(CPUHexagonState *env, unsigned slot, target_ulong vaddr);
 uint16_t mem_load2(CPUHexagonState *env, unsigned slot, target_ulong vaddr);
