@@ -1034,20 +1034,6 @@ void probe_noshuf_load(TCGv va, int s, int mi)
     gen_helper_probe_noshuf_load(cpu_env, va, size, mem_idx);
 }
 
-void gen_set_usr_field(int field, TCGv val)
-{
-    tcg_gen_deposit_tl(hex_new_value[HEX_REG_USR], hex_new_value[HEX_REG_USR],
-                       val,
-                       reg_field_info[field].offset,
-                       reg_field_info[field].width);
-}
-
-void gen_set_usr_fieldi(int field, int x)
-{
-    TCGv val = tcg_constant_tl(x);
-    gen_set_usr_field(field, val);
-}
-
 /*
  * Note: Since this function might branch, `val` is
  * required to be a `tcg_temp_local`.
@@ -1069,15 +1055,6 @@ void gen_set_usr_field_if(int field, TCGv val)
         gen_set_usr_field(field, val);
         gen_set_label(skip_label);
     }
-}
-
-void gen_write_new_pc(TCGv addr)
-{
-    /* If there are multiple branches in a packet, ignore the second one */
-    TCGv zero = tcg_constant_tl(0);
-    tcg_gen_movcond_tl(TCG_COND_NE, hex_next_PC, hex_branch_taken, zero,
-                       hex_next_PC, addr);
-    tcg_gen_movi_tl(hex_branch_taken, 1);
 }
 
 void gen_sat_i32(TCGv dest, TCGv source, int width)
