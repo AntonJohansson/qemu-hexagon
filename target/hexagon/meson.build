@@ -159,7 +159,7 @@ hexagon_ss.add(files(
 #     idef-generated-enabled-instructions
 #
 idef_parser_enabled = get_option('hexagon_idef_parser')
-if idef_parser_enabled and 'hexagon-linux-user' in target_dirs
+if idef_parser_enabled
     idef_parser_input_generated = custom_target(
         'idef_parser_input.h.inc',
         output: 'idef_parser_input.h.inc',
